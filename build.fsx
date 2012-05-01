@@ -11,7 +11,7 @@ open System.IO
 let authors = ["Max Malook"]
 let projectName = "Contexteer"
 let copyright = "Copyright - Contexteer 2012"
-let NugetKey = if System.IO.File.Exists @".\key.txt" then ReadFileAsString @".\key.txt" else ""
+let NugetKey = getBuildParamOrDefault "nugetkey" ""
 
 let version =
     if hasBuildParam "version" then getBuildParam "version" else
