@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <description>
+Contexteer is little framework build to support you when you need a context in your code. @description@
+    </description>
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <language>en-US</language>
+    <summary>A framework for contexts. @summary@</summary>
+<!--    <iconUrl>http://github.com/mexx/Contexteer/raw/dev/Contexteer.png</iconUrl> -->
+    <projectUrl>http://github.com/mexx/Contexteer</projectUrl>
+    <licenseUrl>http://github.com/mexx/Contexteer/raw/dev/License.txt</licenseUrl>
+    <tags>context branch business businessbranch fluent</tags>
+    @dependencies@
+  </metadata>
+</package>
