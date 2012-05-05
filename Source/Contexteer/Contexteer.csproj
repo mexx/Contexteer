@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Configuration\IConfigure.cs" />
     <Compile Include="Configuration\In.cs" />
     <Compile Include="Default.cs" />
