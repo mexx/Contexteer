@@ -8,7 +8,7 @@ For library writers it provides a standard way to add multi tenancy support.
 
 Create a class that names your context and implements the IContext interface.
 
-    public class BusinessBranch : IContext
+	public class BusinessBranch : IContext
 	{
 		public string Name { get; private set; }
 		
@@ -47,7 +47,7 @@ One more example from [FeatureSwitcher](http://mexx.github.com/FeatureSwitcher/)
 
 Type
 
-    install-package Contexteer
+	install-package Contexteer
 
 into the package management console.
 
