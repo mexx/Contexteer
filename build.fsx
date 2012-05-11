@@ -11,13 +11,14 @@ open System.IO
 let authors = ["Max Malook"]
 let projectName = "Contexteer"
 let copyright = "Copyright - Contexteer 2012"
-let NugetKey = getBuildParamOrDefault "nugetkey" ""
+
+TraceEnvironmentVariables()
 
 let version =
     if hasBuildParam "version" then getBuildParam "version" else
     if isLocalBuild then getLastTag() else
     // version is set to the last tag retrieved from GitHub Rest API
-    let url = "http://github.com/api/v2/json/repos/show/mexx/Contexteer/tags"
+    let url = sprintf "http://github.com/api/v2/json/repos/show/mexx/%s/tags" projectName
     tracefn "Downloading tags from %s" url
     let tagsFile = REST.ExecuteGetCommand null null url
     let r = new Regex("[,{][\"]([^\"]*)[\"]")
@@ -28,48 +29,52 @@ let version =
 
 let title = if isLocalBuild then sprintf "%s (%s)" projectName <| getCurrentHash() else projectName
 
+let NugetKey = getBuildParamOrDefault "nugetkey" ""
 
 (* Directories *)
+let targetPlatformDir = getTargetPlatformDir "v4.0.30319"
+let sourceDir = @".\Source\"
+let packagesDir = sourceDir + @"packages\"
+
 let buildDir = @".\Build\"
-let packagesDir = @".\Source\packages\"
-let docsDir = buildDir + @"Documentation\"
+let testDir = buildDir
 let testOutputDir = buildDir + @"Specs\"
 let nugetDir = buildDir + @"NuGet\"
-let testDir = buildDir
 let deployDir = @".\Release\"
-let targetPlatformDir = getTargetPlatformDir "v4.0.30319"
-let nugetLibDir = nugetDir + @"lib\"
 
 (* files *)
-let slnReferences = !! @".\Source\*.sln"
-let nugetPath = @".\Source\.nuget\NuGet.exe"
+let slnReferences = !! (sourceDir + @"*.sln")
+let nugetPath = sourceDir + @".nuget\NuGet.exe"
 
 (* tests *)
 let MSpecVersion = lazy ( GetPackageVersion packagesDir "Machine.Specifications" )
-let mspecTool = lazy( sprintf @".\Source\packages\Machine.Specifications.%s\tools\mspec-clr4.exe" (MSpecVersion.Force()) )
+let mspecTool = lazy( sprintf @"%s\Machine.Specifications.%s\tools\mspec-clr4.exe" packagesDir (MSpecVersion.Force()) )
 
 (* behaviors *)
 let Behaviors = ["Configuration"]
 
 (* Targets *)
-Target "Clean" (fun _ -> CleanDirs [buildDir; testDir; deployDir; docsDir; testOutputDir] )
+Target "Clean" (fun _ -> 
+    CleanDirs [buildDir; testDir; testOutputDir; nugetDir; deployDir]
+)
 
-
-Target "BuildApp" (fun _ ->
+Target "SetAssemblyInfo" (fun _ ->
     AssemblyInfo
-      (fun p ->
+        (fun p ->
         {p with
             CodeLanguage = CSharp;
             AssemblyVersion = version;
-            AssemblyTitle = title;
-            AssemblyDescription = "A framework for feature toggles/switches";
+            AssemblyInformationalVersion = version;
+            AssemblyTitle = "Contexteer";
+            AssemblyDescription = "A framework for contexts";
             AssemblyCompany = projectName;
             AssemblyCopyright = copyright;
             Guid = "fab4c86e-fa7a-453c-acb6-90e229411626";
             OutputFileName = @".\Source\Contexteer\Properties\AssemblyInfo.cs"})
+)
 
-    slnReferences
-        |> MSBuildRelease buildDir "Build"
+Target "BuildApp" (fun _ ->
+    MSBuildRelease buildDir "Build" slnReferences
         |> Log "AppBuild-Output: "
 )
 
@@ -90,35 +95,22 @@ FinalTarget "DeployTestResults" (fun () ->
       |> Zip testOutputDir (sprintf "%sMSpecResults.zip" deployDir)
 )
 
-Target "GenerateDocumentation" (fun _ ->
-    !+ (buildDir + "Machine.Fakes.dll")
-      |> Scan
-      |> Docu (fun p ->
-          {p with
-              ToolPath = "./tools/docu/docu.exe"
-              TemplatesPath = "./tools/docu/templates"
-              OutputPath = docsDir })
-)
-
-Target "ZipDocumentation" (fun _ ->
-    !! (docsDir + "/**/*.*")
-      |> Zip docsDir (deployDir + sprintf "Documentation-%s.zip" version)
-)
-
 Target "BuildZip" (fun _ ->
     !+ (buildDir + "/**/*.*")
       -- "*.zip"
-      -- "**/*.Specs.*"
+      -- "**/*.Specs.dll"
+      -- "**/*.Specs.pdb"
         |> Scan
-        |> Zip buildDir (deployDir + sprintf "%s-%s.zip" projectName version)
+        |> Zip buildDir (deployDir @@ sprintf "%s-%s.zip" projectName version)
 )
 
 Target "BuildNuGet" (fun _ ->
-    CleanDirs [nugetDir; nugetLibDir]
+    let nugetLibDir = nugetDir @@ "lib" @@ "4.0"
 
-    [buildDir + "Contexteer.dll"]
+    CleanDirs [nugetLibDir]
+
+    [buildDir @@ "Contexteer.dll"]
         |> CopyTo nugetLibDir
-
 
     NuGet (fun p ->
         {p with
@@ -135,44 +127,16 @@ Target "BuildNuGet" (fun _ ->
       |> CopyTo deployDir
 )
 
-Target "BuildNuGetBehaviors" (fun _ ->
-    Behaviors
-      |> Seq.iter (fun (behavior) ->
-            CleanDirs [nugetDir; nugetLibDir]
-
-            [buildDir + sprintf "Contexteer.%s.dll" behavior]
-              |> CopyTo nugetLibDir
-
-            NuGet (fun p ->
-                {p with
-                    ToolPath = nugetPath
-                    Authors = authors
-                    Project = sprintf "%s.%s" projectName behavior
-                    Description = sprintf " This is the %s behavior." behavior
-                    Version = version
-                    OutputPath = nugetDir
-                    Dependencies =
-                        [projectName, RequireExactly (NormalizeVersion version)]
-                    AccessKey = NugetKey
-                    Publish = NugetKey <> "" })
-                "Contexteer.nuspec"
-
-            !! (nugetDir + sprintf "Contexteer.%s.*.nupkg" behavior)
-              |> CopyTo deployDir)
-)
-
 Target "Default" DoNothing
 Target "Deploy" DoNothing
 
 // Build order
 "Clean"
+  ==> "SetAssemblyInfo"
   ==> "BuildApp"
   ==> "Test"
   ==> "BuildZip"
-//  ==> "GenerateDocumentation"
-//  ==> "ZipDocumentation"
   ==> "BuildNuGet"
-//  ==> "BuildNuGetBehaviors"
   ==> "Deploy"
   ==> "Default"
 
