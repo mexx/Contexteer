@@ -45,6 +45,7 @@ let deployDir = @".\Release\"
 (* files *)
 let slnReferences = !! (sourceDir + @"*.sln")
 let nugetPath = sourceDir + @".nuget\NuGet.exe"
+let nuspecPath = sourceDir + "Contexteer\Contexteer.nuspec"
 
 (* tests *)
 let MSpecVersion = lazy ( GetPackageVersion packagesDir "Machine.Specifications" )
@@ -121,7 +122,7 @@ Target "BuildNuGet" (fun _ ->
             OutputPath = nugetDir
             AccessKey = NugetKey
             Publish = NugetKey <> "" })
-        "Contexteer.nuspec"
+        nuspecPath
 
     !! (nugetDir + "Contexteer.*.nupkg")
       |> CopyTo deployDir
