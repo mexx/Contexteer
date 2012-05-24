@@ -27,8 +27,6 @@ let version =
         |> List.filter ((<>) "tags")
         |> List.max
 
-let title = if isLocalBuild then sprintf "%s (%s)" projectName <| getCurrentHash() else projectName
-
 let NugetKey = getBuildParamOrDefault "nugetkey" ""
 
 (* Directories *)
@@ -50,9 +48,6 @@ let nuspecPath = sourceDir + "Contexteer\Contexteer.nuspec"
 (* tests *)
 let MSpecVersion = lazy ( GetPackageVersion packagesDir "Machine.Specifications" )
 let mspecTool = lazy( sprintf @"%s\Machine.Specifications.%s\tools\mspec-clr4.exe" packagesDir (MSpecVersion.Force()) )
-
-(* behaviors *)
-let Behaviors = ["Configuration"]
 
 (* Targets *)
 Target "Clean" (fun _ -> 
