@@ -33,7 +33,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Configuration\IConfigure.cs" />
+    <Compile Include="Configuration\ConfigurationOf.cs" />
     <Compile Include="Configuration\In.cs" />
     <Compile Include="Default.cs" />
     <Compile Include="IContext.cs" />

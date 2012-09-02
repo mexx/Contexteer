@@ -1,5 +1,4 @@
-﻿using Contexteer.Configuration;
-using Machine.Specifications;
+﻿using Machine.Specifications;
 
 namespace Contexteer.Specs
 {
@@ -7,31 +6,13 @@ namespace Contexteer.Specs
     // ReSharper disable UnusedMember.Local
     public class WhenAskedForDefaultContext
     {
-        It should_not_be_null = () => Default.Context.ShouldNotBeNull();
-    }
+        static Default context;
+        
+        Because of = () => context = Default.Context;
 
-    public class WhenForDefaultContextConfiguredByFunc
-    {
-        Because of = () => In<Default>.Contexts.TestsAre().
-            ConfiguredBy(ctx => "Test");
-
-        It should_not_fail = () => true.ShouldBeTrue();
-    }
-
-    public class WhenConfiguredByFunc
-    {
-        Because of = () => In<Test>.Contexts.TestsAre().
-            ConfiguredBy(ctx => "Test");
-
-        It should_not_fail = () => true.ShouldBeTrue();
-    }
-
-    public class WhenConfiguredByComplexBehavior
-    {
-        Because of = () => In<Test>.Contexts.TestsAre().
-            ConfiguredBy(Complex.Behavior);
-
-        It should_not_fail = () => true.ShouldBeTrue();
+        It should_not_be_null = () => context.ShouldNotBeNull();
+        It should_be_a_context = () => context.ShouldBeOfType<IContext>();
+        It should_be_of_correct_type = () => context.ShouldBeOfType<Default>();
     }
     // ReSharper restore UnusedMember.Local
     // ReSharper restore InconsistentNaming
