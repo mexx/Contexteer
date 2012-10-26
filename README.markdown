@@ -23,22 +23,24 @@ Create an instance of your context.
 	var branch = new BusinessBranch("Headquarter");
 
 A library which uses Contexteer will provide some way to use this instance.
-Here an example from [FeatureSwitcher](http://mexx.github.com/FeatureSwitcher/)
+Here an example from [FeatureSwitcher](https://github.com/mexx/FeatureSwitcher/)
 	
 	Feature<Sample>.Is().EnabledInContextOf(branch);
 
 For configuration purposes Contexteer provides the starting point for a fluent API library writers can extend.
-Again an example from [FeatureSwitcher](http://mexx.github.com/FeatureSwitcher/)
+Again an example from FeatureSwitcher
 
 	In<BusinessBranch>.Contexts.FeaturesAre().AlwaysEnabled();
 
-To provide similar configuration functionality simply provide an extension method on IConfigure<TContext> interface.
-One more example from [FeatureSwitcher](http://mexx.github.com/FeatureSwitcher/)
+To provide similar configuration functionality simply write an extension method for ConfigurationOf<TContext> class.
+One more example from FeatureSwitcher
 
-	public static IConfigureFeaturesFor<TContext> FeaturesAre<TContext>(this IConfigure<TContext> This)
-		where TContext : IContext
+	public static IConfigureFeaturesFor<TContext> FeaturesAre<TContext>(this ConfigurationOf<TContext> This)
+	    where TContext : IContext
 	{
-		return new FeatureConfigurationFor<TContext>();
+	    var result = new FeatureConfigurationFor<TContext>();
+	    This.Set(typeof (FeatureConfiguration), result);
+	    return result;
 	}
 
 ## How to get it
