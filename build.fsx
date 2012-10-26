@@ -91,7 +91,8 @@ Target "BuildNuGet" (fun _ ->
 
     CleanDirs [nugetLibDir]
 
-    [buildDir @@ "Contexteer.dll"]
+    [buildDir @@ "Contexteer.dll";
+     buildDir @@ "Contexteer.xml"]
         |> CopyTo nugetLibDir
 
     NuGet (fun p ->
