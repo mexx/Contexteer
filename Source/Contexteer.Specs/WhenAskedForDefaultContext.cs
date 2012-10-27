@@ -10,7 +10,6 @@ namespace Contexteer.Specs
         
         Because of = () => context = Default.Context;
 
-        It should_not_be_null = () => context.ShouldNotBeNull();
         It should_be_a_context = () => context.ShouldBeOfType<IContext>();
         It should_be_of_correct_type = () => context.ShouldBeOfType<Default>();
     }

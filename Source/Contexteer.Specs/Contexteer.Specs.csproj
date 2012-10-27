@@ -44,10 +44,13 @@
   <ItemGroup>
     <Compile Include="WhenAskedForDefaultContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WhenAssignedConcreteValueForKeyInDefaultContexts.cs" />
-    <Compile Include="WhenAssignedConcreteValueForKeyInDefaultContextsThenInOtherContextsKey.cs" />
-    <Compile Include="WhenAssignedNullForKeyAndRemovedKeyInDefaultContexts.cs" />
-    <Compile Include="WhenAssignedNullForKeyInDefaultContexts.cs" />
+    <Compile Include="WhenUseConcreteValueForKeyInDefaultContexts.cs" />
+    <Compile Include="WhenUseConcreteValueForKeyInDefaultContextsThenInOtherContextsKey.cs" />
+    <Compile Include="WhenUseConcreteValueForKeyAndRemoveIt.cs" />
+    <Compile Include="WhenUseNullAsValueInDefaultContexts.cs" />
+    <Compile Include="WhenUseNullAsKeyForAssigningValue.cs" />
+    <Compile Include="WhenUseNullAsKeyForGettingValue.cs" />
+    <Compile Include="WhenUseNullAsKeyForRemovingValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Contexteer\Contexteer.csproj">

@@ -5,17 +5,17 @@ namespace Contexteer.Specs
 {
     // ReSharper disable InconsistentNaming
     // ReSharper disable UnusedMember.Local
-    public class WhenAssignedConcreteValueForKeyInDefaultContexts
+    public class WhenUseNullAsValueInDefaultContexts
     {
         static bool present;
         static string value;
 
-        Establish ctx = () => In<Default>.Contexts.Set("test", "known");
+        Establish ctx = () => In<Default>.Contexts.Set("test", null);
 
         Because of = () => present = In<Default>.Contexts.TryGet("test", out value);
 
         It should_have_value_present = () => present.ShouldBeTrue();
-        It should_return_correct_value = () => value.ShouldEqual("known");
+        It should_return_correct_value = () => value.ShouldBeNull();
     }
     // ReSharper restore UnusedMember.Local
     // ReSharper restore InconsistentNaming
